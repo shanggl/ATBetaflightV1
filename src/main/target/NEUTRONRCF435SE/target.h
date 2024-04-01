@@ -172,7 +172,7 @@
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
 #define SERIALRX_PROVIDER       SERIALRX_CRSF
 #define SERIALRX_UART           SERIAL_PORT_USART2
-
+#define USE_ULTRA_LOW_ELRS_BAUDRATE_115200
 
 
 // *************** ADC *****************************

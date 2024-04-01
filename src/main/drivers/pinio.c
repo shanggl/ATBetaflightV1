@@ -30,6 +30,8 @@
 
 #include "drivers/io.h"
 
+#include "io/vtx_control.h"
+
 typedef struct pinioRuntime_s {
     IO_t io;
     bool inverted;
@@ -80,6 +82,23 @@ void pinioSet(int index, bool on)
     if (newState != pinioRuntime[index].state) {
         IOWrite(pinioRuntime[index].io, newState);
         pinioRuntime[index].state = newState;
+
+        //use 3 pinio , pinio 0 for all 1 for increase channel 2for increase band
+        if(pinioRuntime[0].state==true){
+        //for temp use call of Mr.Guowei
+            if (1==index)
+            {
+                /* increase vtx channel */
+                vtxCycleBandOrChannel(0, +1);
+            }
+            if (2==index)
+            {
+                /* decrease vtx channel */
+                vtxCycleBandOrChannel(+1, 0);
+            }
+        }
+    
     }
+
 }
 #endif

@@ -50,9 +50,14 @@
 #include "rx/crsf.h"
 
 #include "telemetry/crsf.h"
-
+#if defined(USE_ULTRA_LOW_ELRS_BAUDRATE_115200)
+#define CRSF_TIME_NEEDED_PER_FRAME_US   6750 // a maximally sized 64byte payload will take ~1550us, round up to 1750.
+#else
 #define CRSF_TIME_NEEDED_PER_FRAME_US   1750 // a maximally sized 64byte payload will take ~1550us, round up to 1750.
+#endif
+
 #define CRSF_TIME_BETWEEN_FRAMES_US     6667 // At fastest, frames are sent by the transmitter every 6.667 milliseconds, 150 Hz
+
 
 #define CRSF_DIGITAL_CHANNEL_MIN 172
 #define CRSF_DIGITAL_CHANNEL_MAX 1811

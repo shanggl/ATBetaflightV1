@@ -27,7 +27,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#if defined(USE_ULTRA_LOW_ELRS_BAUDRATE_115200)
+#define CRSF_BAUDRATE           115200
+#else
 #define CRSF_BAUDRATE           420000
+#endif
 
 enum { CRSF_SYNC_BYTE = 0xC8 };
 
