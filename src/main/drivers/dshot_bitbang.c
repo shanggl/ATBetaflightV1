@@ -167,9 +167,12 @@ static void bbOutputDataInit(uint32_t *buffer, uint16_t portMask, bool inverted)
         setMask = portMask;
     }
 
-    int symbol_index;
+    buffer[0] |= resetMask; // Always reset all ports
+    buffer[1] = 0;          // Never any change
+    buffer[2] = 0;          // Never any change
 
-    for (symbol_index = 0; symbol_index < MOTOR_DSHOT_FRAME_BITS; symbol_index++) {
+    int symbol_index;
+    for (symbol_index = 1; symbol_index < MOTOR_DSHOT_FRAME_BITS + 1; symbol_index++) {
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 0] |= setMask ; // Always set all ports
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 1] = 0;          // Reset bits are port dependent
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 2] |= resetMask; // Always reset all ports
@@ -184,7 +187,7 @@ static void bbOutputDataInit(uint32_t *buffer, uint16_t portMask, bool inverted)
     // driven or floating.  On some MCUs it's observed that the voltage momentarily drops low on transition
     // to input.
 
-    int hold_bit_index = MOTOR_DSHOT_FRAME_BITS * MOTOR_DSHOT_STATE_PER_SYMBOL;
+    int hold_bit_index = (MOTOR_DSHOT_FRAME_BITS + 1) * MOTOR_DSHOT_STATE_PER_SYMBOL;
     buffer[hold_bit_index + 0] |= resetMask; // Always reset all ports
     buffer[hold_bit_index + 1] = 0;          // Never any change
     buffer[hold_bit_index + 2] = 0;          // Never any change
@@ -200,7 +203,7 @@ static void bbOutputDataSet(uint32_t *buffer, int pinNumber, uint16_t value, boo
         middleBit = (1 << (pinNumber + 16));
     }
 
-    for (int pos = 0; pos < 16; pos++) {
+    for (int pos = 1; pos < 17; pos++) {
         if (!(value & 0x8000)) {
             buffer[pos * 3 + 1] |= middleBit;
         }
@@ -211,7 +214,7 @@ static void bbOutputDataSet(uint32_t *buffer, int pinNumber, uint16_t value, boo
 static void bbOutputDataClear(uint32_t *buffer)
 {
     // Middle position to no change
-    for (int bitpos = 0; bitpos < 16; bitpos++) {
+    for (int bitpos = 1; bitpos < 17; bitpos++) {
         buffer[bitpos * 3 + 1] = 0;
     }
 }
