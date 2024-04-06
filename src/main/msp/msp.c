@@ -1261,6 +1261,15 @@ case MSP_NAME:
                     if ((dshotTelemetryState.motorState[i].telemetryTypes & (1 << DSHOT_TELEMETRY_TYPE_VOLTAGE)) != 0) {
                         escVoltage = dshotTelemetryState.motorState[i].telemetryData[DSHOT_TELEMETRY_TYPE_VOLTAGE] >> 2;
                     }
+
+                    //use the unused escConsumption field for dshot telem debug info. 
+                    if ((dshotTelemetryState.motorState[i].telemetryTypes & (1 << DSHOT_TELEMETRY_TYPE_DEBUG2)) != 0) {
+                        escConsumption = dshotTelemetryState.motorState[i].telemetryData[DSHOT_TELEMETRY_TYPE_DEBUG2];
+                    }
+
+                    if ((dshotTelemetryState.motorState[i].telemetryTypes & (1 << DSHOT_TELEMETRY_TYPE_DEBUG3)) != 0) {
+                        escConsumption |= dshotTelemetryState.motorState[i].telemetryData[DSHOT_TELEMETRY_TYPE_DEBUG3] << 8;
+                    }
                 }
             }
 #endif

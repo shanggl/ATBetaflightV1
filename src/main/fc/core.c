@@ -508,19 +508,30 @@ void tryArm(void)
             return;
         }
 
-        if (isMotorProtocolDshot() && isModeActivationConditionPresent(BOXFLIPOVERAFTERCRASH)) {
-            if (!(IS_RC_MODE_ACTIVE(BOXFLIPOVERAFTERCRASH) || (tryingToArm == ARMING_DELAYED_CRASHFLIP))) {
-                flipOverAfterCrashActive = false;
-                if (!featureIsEnabled(FEATURE_3D)) {
-                    dshotCommandWrite(ALL_MOTORS, getMotorCount(), DSHOT_CMD_SPIN_DIRECTION_NORMAL, DSHOT_CMD_TYPE_INLINE);
+        if (isMotorProtocolDshot() ){
+#if defined(USE_ESC_SENSOR) && defined(USE_DSHOT_TELEMETRY)
+            // Try to activate extended DSHOT telemetry only if no esc sensor exists and dshot telemetry is active
+            if (!featureIsEnabled(FEATURE_ESC_SENSOR) && motorConfig()->dev.useDshotTelemetry) {
+                dshotCleanTelemetryData();
+                if (motorConfig()->dev.useDshotEdt) {
+                    dshotCommandWrite(ALL_MOTORS, getMotorCount(), DSHOT_CMD_EXTENDED_TELEMETRY_ENABLE, DSHOT_CMD_TYPE_INLINE);
                 }
-            } else {
-                flipOverAfterCrashActive = true;
-#ifdef USE_RUNAWAY_TAKEOFF
-                runawayTakeoffCheckDisabled = false;
+            }
 #endif
-                if (!featureIsEnabled(FEATURE_3D)) {
-                    dshotCommandWrite(ALL_MOTORS, getMotorCount(), DSHOT_CMD_SPIN_DIRECTION_REVERSED, DSHOT_CMD_TYPE_INLINE);
+            if( isModeActivationConditionPresent(BOXFLIPOVERAFTERCRASH)) {
+                if (!(IS_RC_MODE_ACTIVE(BOXFLIPOVERAFTERCRASH) || (tryingToArm == ARMING_DELAYED_CRASHFLIP))) {
+                    flipOverAfterCrashActive = false;
+                    if (!featureIsEnabled(FEATURE_3D)) {
+                        dshotCommandWrite(ALL_MOTORS, getMotorCount(), DSHOT_CMD_SPIN_DIRECTION_NORMAL, DSHOT_CMD_TYPE_INLINE);
+                    }
+                } else {
+                    flipOverAfterCrashActive = true;
+#ifdef USE_RUNAWAY_TAKEOFF
+                    runawayTakeoffCheckDisabled = false;
+#endif
+                    if (!featureIsEnabled(FEATURE_3D)) {
+                        dshotCommandWrite(ALL_MOTORS, getMotorCount(), DSHOT_CMD_SPIN_DIRECTION_REVERSED, DSHOT_CMD_TYPE_INLINE);
+                    }
                 }
             }
         }
