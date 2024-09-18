@@ -1732,7 +1732,7 @@ case MSP_NAME:
 
 #ifdef USE_LED_STRIP
     case MSP_LED_STRIP_CONFIG:
-        for (int i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
+        for (int i = 0; i < LED_STRIP_MAX_LENGTH; i++) {
 #ifdef USE_LED_STRIP_STATUS_MODE
             const ledConfig_t *ledConfig = &ledStripStatusModeConfig()->ledConfigs[i];
             sbufWriteU32(dst, *ledConfig);
@@ -2575,6 +2575,13 @@ static mspResult_e mspFcProcessOutCommandWithArg(mspDescriptor_t srcDesc, int16_
             }
         }
         break;
+#ifdef USE_LED_STRIP
+    case MSP2_GET_LED_STRIP_CONFIG_VALUES:
+        sbufWriteU8(dst, ledStripConfig()->ledstrip_brightness);
+        sbufWriteU16(dst, ledStripConfig()->ledstrip_rainbow_delta);
+        sbufWriteU16(dst, ledStripConfig()->ledstrip_rainbow_freq);
+        break;
+#endif
 
     default:
         return MSP_RESULT_CMD_UNKNOWN;
@@ -3835,7 +3842,7 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
     case MSP_SET_LED_STRIP_CONFIG:
         {
             i = sbufReadU8(src);
-            if (i >= LED_MAX_STRIP_LENGTH || dataSize != (1 + 4)) {
+            if (i >= LED_STRIP_MAX_LENGTH || dataSize != (1 + 4)) {
                 return MSP_RESULT_ERROR;
             }
 #ifdef USE_LED_STRIP_STATUS_MODE
@@ -3988,6 +3995,14 @@ static mspResult_e mspProcessInCommand(mspDescriptor_t srcDesc, int16_t cmdMSP, 
 #endif
         }
         break;
+        
+#ifdef USE_LED_STRIP
+    case MSP2_SET_LED_STRIP_CONFIG_VALUES:
+        ledStripConfigMutable()->ledstrip_brightness = sbufReadU8(src);
+        ledStripConfigMutable()->ledstrip_rainbow_delta = sbufReadU16(src);
+        ledStripConfigMutable()->ledstrip_rainbow_freq = sbufReadU16(src);
+        break;
+#endif
 
     default:
         // we do not know how to handle the (valid) message, indicate error MSP $M!
