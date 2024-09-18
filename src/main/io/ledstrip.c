@@ -155,7 +155,7 @@ void pgResetFn_ledStripConfig(ledStripConfig_t *ledStripConfig)
 #ifdef LED_STRIP_PIN
     ledStripConfig->ioTag = IO_TAG(LED_STRIP_PIN);
 #else
-    ledStripConfig->ioTag = IO_TAG_NONE;
+    ledStripConfig->ioTag = timerioTagGetByUsage(TIM_USE_LED, 0);
 #endif
 #endif
 }
