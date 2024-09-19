@@ -24,7 +24,7 @@
 
 #include "drivers/io_types.h"
 
-#define WS2811_LED_STRIP_LENGTH    32
+#define WS2811_LED_STRIP_LENGTH    LED_STRIP_MAX_LENGTH
 
 #define WS2811_BITS_PER_LED_MAX    32
 
@@ -41,7 +41,7 @@
 #define WS2811_DMA_BUFFER_SIZE     (WS2811_DATA_BUFFER_SIZE * WS2811_BITS_PER_LED_MAX + WS2811_DELAY_BUFFER_LENGTH)
 #endif
 
-#ifdef USE_LEDSTRIP_CACHE_MGMT
+#ifdef USE_LED_STRIP_CACHE_MGMT
 // WS2811_DMA_BUFFER_SIZE is multiples of uint32_t
 // Number of bytes required for buffer
 #define WS2811_DMA_BUF_BYTES              (WS2811_DMA_BUFFER_SIZE * sizeof(uint32_t))
@@ -51,11 +51,7 @@
 #define WS2811_DMA_BUF_CACHE_ALIGN_LENGTH (WS2811_DMA_BUF_CACHE_ALIGN_BYTES / sizeof(uint32_t))
 extern uint32_t ledStripDMABuffer[WS2811_DMA_BUF_CACHE_ALIGN_LENGTH];
 #else
-#if defined(STM32F1) || defined(STM32F3)
-extern uint8_t ledStripDMABuffer[WS2811_DMA_BUFFER_SIZE];
-#else
 extern uint32_t ledStripDMABuffer[WS2811_DMA_BUFFER_SIZE];
-#endif
 #endif
 
 #define WS2811_TIMER_MHZ           48
@@ -74,7 +70,7 @@ void ws2811LedStripEnable(void);
 bool ws2811LedStripHardwareInit(ioTag_t ioTag);
 void ws2811LedStripDMAEnable(void);
 
-void ws2811UpdateStrip(ledStripFormatRGB_e ledFormat, uint8_t brightness);
+bool ws2811UpdateStrip(ledStripFormatRGB_e ledFormat, uint8_t brightness);
 
 void setLedHsv(uint16_t index, const hsvColor_t *color);
 void getLedHsv(uint16_t index, hsvColor_t *color);
