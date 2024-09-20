@@ -425,5 +425,9 @@
 #define DEF_TIM_AF__PE5__TCH_TMR9_CH1    D(2, 9)
 #define DEF_TIM_AF__PE6__TCH_TMR9_CH2    D(2, 9)
 
+//PORT H MUX 2
+#define DEF_TIM_AF__PH2__TCH_TMR5_CH1    D(1, 5)
+#define DEF_TIM_AF__PH3__TCH_TMR5_CH2    D(2, 5)
+
 #endif
 
