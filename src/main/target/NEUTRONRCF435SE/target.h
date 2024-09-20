@@ -109,7 +109,7 @@
 #define MAX7456_SPI_CS_PIN      SPI2_NSS_PIN
 
 /********************BLACKBOX***********************/
-#define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
+#define DEFAULT_BLACKBOX_DEVICE BLACKBOX_DEVICE_FLASH
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
 #define USE_FLASH_W25N01G          // 1Gb NAND flash support
