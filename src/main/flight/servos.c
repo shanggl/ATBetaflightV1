@@ -388,6 +388,7 @@ void writeServos(void)
     // Scan servos and write those marked forwarded and not written yet
     for (int i = 0; i < MAX_SUPPORTED_SERVOS; i++) {
         const uint8_t channelToForwardFrom = servoParams(i)->forwardFromChannel;
+        servo[servoIndex]=determineServoMiddleOrForwardFromChannel(servoIndex);
         if ((channelToForwardFrom != CHANNEL_FORWARDING_DISABLED) && !(servoWritten & (1 << i))) {
             pwmWriteServo(servoIndex++, servo[i]);
         }
