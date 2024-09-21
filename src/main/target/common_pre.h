@@ -187,6 +187,17 @@ extern uint8_t _dmaram_end__;
 #define USE_SERIALRX_SPEKTRUM   // SRXL, DSM2 and DSMX protocol
 #define USE_SERIALRX_SUMD       // Graupner Hott protocol
 
+
+#if !defined(LED_STRIP_MAX_LENGTH)
+#ifdef USE_LED_STRIP_64
+#define LED_STRIP_MAX_LENGTH           64
+#else
+#define LED_STRIP_MAX_LENGTH           32
+#endif
+#endif // # !defined(LED_STRIP_MAX_LENGTH)
+
+
+
 #if (TARGET_FLASH_SIZE > 128)
 #define PID_PROFILE_COUNT 3
 #define CONTROL_RATE_PROFILE_COUNT  6
@@ -398,3 +409,8 @@ extern uint8_t _dmaram_end__;
 #define USE_OSD_STICK_OVERLAY
 
 #endif //end of USE_OSD
+
+
+#if defined(USE_LED_STRIP)
+#define USE_LED_STRIP_STATUS_MODE
+#endif

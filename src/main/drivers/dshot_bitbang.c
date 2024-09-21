@@ -167,9 +167,12 @@ static void bbOutputDataInit(uint32_t *buffer, uint16_t portMask, bool inverted)
         setMask = portMask;
     }
 
-    int symbol_index;
+    buffer[0] |= resetMask; // Always reset all ports
+    buffer[1] = 0;          // Never any change
+    buffer[2] = 0;          // Never any change
 
-    for (symbol_index = 0; symbol_index < MOTOR_DSHOT_FRAME_BITS; symbol_index++) {
+    int symbol_index;
+    for (symbol_index = 1; symbol_index < MOTOR_DSHOT_FRAME_BITS + 1; symbol_index++) {
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 0] |= setMask ; // Always set all ports
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 1] = 0;          // Reset bits are port dependent
         buffer[symbol_index * MOTOR_DSHOT_STATE_PER_SYMBOL + 2] |= resetMask; // Always reset all ports
@@ -184,7 +187,7 @@ static void bbOutputDataInit(uint32_t *buffer, uint16_t portMask, bool inverted)
     // driven or floating.  On some MCUs it's observed that the voltage momentarily drops low on transition
     // to input.
 
-    int hold_bit_index = MOTOR_DSHOT_FRAME_BITS * MOTOR_DSHOT_STATE_PER_SYMBOL;
+    int hold_bit_index = (MOTOR_DSHOT_FRAME_BITS + 1) * MOTOR_DSHOT_STATE_PER_SYMBOL;
     buffer[hold_bit_index + 0] |= resetMask; // Always reset all ports
     buffer[hold_bit_index + 1] = 0;          // Never any change
     buffer[hold_bit_index + 2] = 0;          // Never any change
@@ -200,7 +203,7 @@ static void bbOutputDataSet(uint32_t *buffer, int pinNumber, uint16_t value, boo
         middleBit = (1 << (pinNumber + 16));
     }
 
-    for (int pos = 0; pos < 16; pos++) {
+    for (int pos = 1; pos < 17; pos++) {
         if (!(value & 0x8000)) {
             buffer[pos * 3 + 1] |= middleBit;
         }
@@ -211,7 +214,7 @@ static void bbOutputDataSet(uint32_t *buffer, int pinNumber, uint16_t value, boo
 static void bbOutputDataClear(uint32_t *buffer)
 {
     // Middle position to no change
-    for (int bitpos = 0; bitpos < 16; bitpos++) {
+    for (int bitpos = 1; bitpos < 17; bitpos++) {
         buffer[bitpos * 3 + 1] = 0;
     }
 }
@@ -575,7 +578,7 @@ static bool bbDecodeTelemetry(void)
         }
 #endif
         for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS && motorIndex < motorCount; motorIndex++) {
-#if defined(STM32F4)
+#if defined(STM32F4) || defined(AT32F4)
             uint32_t rawValue = decode_bb_bitband(
                 bbMotors[motorIndex].bbPort->portInputBuffer,
                 bbMotors[motorIndex].bbPort->portInputCount,
@@ -666,12 +669,24 @@ static void bbUpdateComplete(void)
             return;
         }
     }
+    
+#ifdef USE_DSHOT_CACHE_MGMT
+    for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS && motorIndex < motorCount; motorIndex++) {
+        // Only clean each buffer once. If all motors are on a common port they'll share a buffer.
+        bool clean = false;
+        for (int i = 0; i < motorIndex; i++) {
+            if (bbMotors[motorIndex].bbPort->portOutputBuffer == bbMotors[i].bbPort->portOutputBuffer) {
+                clean = true;
+            }
+        }
+        if (!clean) {
+            SCB_CleanDCache_by_Addr(bbMotors[motorIndex].bbPort->portOutputBuffer, MOTOR_DSHOT_BUF_CACHE_ALIGN_BYTES);
+        }
+    }
+#endif
 
     for (int i = 0; i < usedMotorPorts; i++) {
         bbPort_t *bbPort = &bbPorts[i];
-#ifdef USE_DSHOT_CACHE_MGMT
-        SCB_CleanDCache_by_Addr(bbPort->portOutputBuffer, MOTOR_DSHOT_BUF_CACHE_ALIGN_BYTES);
-#endif
 
 #ifdef USE_DSHOT_TELEMETRY
         if (useDshotTelemetry) {

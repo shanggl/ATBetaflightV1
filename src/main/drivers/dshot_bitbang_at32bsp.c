@@ -195,6 +195,7 @@ void bbSwitchToOutput(bbPort_t * bbPort)
 #endif
 
     // Reinitialize pacer timer for output
+    bbPort->timhw->tim->cval = 0;
 
 //    bbPort->timhw->tim->ARR = bbPort->outputARR;
     bbPort->timhw->tim->pr = bbPort->outputARR;//maps to pr

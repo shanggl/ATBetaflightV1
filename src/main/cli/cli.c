@@ -1930,7 +1930,7 @@ static void printLed(dumpFlags_t dumpMask, const ledConfig_t *ledConfigs, const 
     char ledConfigBuffer[20];
     char ledConfigDefaultBuffer[20];
     headingStr = cliPrintSectionHeading(dumpMask, false, headingStr);
-    for (uint32_t i = 0; i < LED_MAX_STRIP_LENGTH; i++) {
+    for (uint32_t i = 0; i < LED_STRIP_MAX_LENGTH; i++) {
         ledConfig_t ledConfig = ledConfigs[i];
         generateLedConfig(&ledConfig, ledConfigBuffer, sizeof(ledConfigBuffer));
         bool equalsDefault = false;
@@ -1957,7 +1957,7 @@ static void cliLed(const char *cmdName, char *cmdline)
     } else {
         ptr = cmdline;
         i = atoi(ptr);
-        if (i >= 0 && i < LED_MAX_STRIP_LENGTH) {
+        if (i >= 0 && i < LED_STRIP_MAX_LENGTH) {
             ptr = nextArg(cmdline);
             if (parseLedStripConfig(i, ptr)) {
                 generateLedConfig((ledConfig_t *)&ledStripStatusModeConfig()->ledConfigs[i], ledConfigBuffer, sizeof(ledConfigBuffer));
@@ -1966,7 +1966,7 @@ static void cliLed(const char *cmdName, char *cmdline)
                 cliShowParseError(cmdName);
             }
         } else {
-            cliShowArgumentRangeError(cmdName, "INDEX", 0, LED_MAX_STRIP_LENGTH - 1);
+            cliShowArgumentRangeError(cmdName, "INDEX", 0, LED_STRIP_MAX_LENGTH - 1);
         }
     }
 }
@@ -6282,8 +6282,9 @@ static void printConfig(const char *cmdName, char *cmdline, bool doDiff)
 #endif
 
             if ((dumpMask & (DUMP_ALL | DO_DIFF)) == (DUMP_ALL | DO_DIFF)) {
-                cliPrintHashLine("reset configuration to default settings");
-                cliPrintLine("defaults nosave");
+                //not implemented
+                //cliPrintHashLine("reset configuration to default settings");
+                //cliPrintLine("defaults nosave");
             }
         }
 

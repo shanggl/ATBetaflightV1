@@ -75,8 +75,8 @@
 // *************** Gyro & ACC **********************
 
 #define USE_EXTI
-#define USE_GYRO_EXTI
-#define GYRO_1_EXTI_PIN        PA15
+//#define USE_GYRO_EXTI
+//#define GYRO_1_EXTI_PIN        PA15
 #define USE_MPU_DATA_READY_SIGNAL
 #define ENSURE_MPU_DATA_READY_IS_LOW
 
@@ -109,7 +109,7 @@
 #define MAX7456_SPI_CS_PIN      SPI2_NSS_PIN
 
 /********************BLACKBOX***********************/
-#define ENABLE_BLACKBOX_LOGGING_ON_SPIFLASH_BY_DEFAULT
+#define DEFAULT_BLACKBOX_DEVICE BLACKBOX_DEVICE_FLASH
 #define USE_FLASHFS
 #define USE_FLASH_M25P16
 #define USE_FLASH_W25N01G          // 1Gb NAND flash support

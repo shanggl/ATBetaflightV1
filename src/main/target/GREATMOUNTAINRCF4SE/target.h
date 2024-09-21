@@ -20,35 +20,33 @@
 
 #pragma once
 
-#define TARGET_BOARD_IDENTIFIER "CCRC"
-#define USBD_PRODUCT_STRING     "CCRCF435AIO"
+#define TARGET_BOARD_IDENTIFIER "GMRC"
+#define USBD_PRODUCT_STRING     "GREAT-MOUNTAIN-F4SE"
 /**********swd debuger reserved *****************
  *
  * pa13	swdio
  * pa14 swclk
+ * PA15	JTDI
  * PB4 JREST
+ * pb3 swo /DTO
  *
  * other pin
  *
  * BOOT0 button
- * PA8  MCO1/EXINT
+ * PA8  MCO1
  * PA12 OTG1 D+ DP
  * PA11 OTG1 D- DM
  * PH0 HEXT IN
  * PH1 HEXT OUT
- * PB2 BOOT1 -> GND
  */
 #define SYSTEM_HSE_MHZ        8
 //No Buttons
 
 //LEDS
-#define LED0_PIN        PC13
-#define LED1_PIN        PC14
-#define LED0_INVERTED        //PC 13\PC14  驱动电流不够，改为反向驱动LED
-#define LED1_INVERTED
+#define LED0_PIN                PC4 //confirm on LQFP64
 
 #define USE_BEEPER
-#define BEEPER_PIN      PC15
+#define BEEPER_PIN              PC15
 #define BEEPER_INVERTED		 //低电平触发
 
 //ESC Protocol
@@ -63,7 +61,7 @@
 #define SPI1_SCK_PIN            PA5
 #define SPI1_MISO_PIN           PA6
 #define SPI1_MOSI_PIN           PA7
-#define SPI1_NSS_PIN            PA4
+#define SPI1_NSS_PIN            PA15
 
 #define USE_SPI_DEVICE_2
 #define SPI2_SCK_PIN            PB13
@@ -71,12 +69,17 @@
 #define SPI2_MOSI_PIN           PB15
 #define SPI2_NSS_PIN            PB12
 
+#define USE_SPI_DEVICE_3
+#define SPI3_SCK_PIN            PB3
+#define SPI3_MISO_PIN           PB4
+#define SPI3_MOSI_PIN           PB5
+#define SPI3_NSS_PIN 			PB9
 
 // *************** Gyro & ACC **********************
 
 #define USE_EXTI
 #define USE_GYRO_EXTI
-#define GYRO_1_EXTI_PIN        PA15
+#define GYRO_1_EXTI_PIN        PA8
 #define USE_MPU_DATA_READY_SIGNAL
 #define ENSURE_MPU_DATA_READY_IS_LOW
 
@@ -90,8 +93,10 @@
 // #define USE_ACC_SPI_MPU6500		//debug only
 #define USE_GYRO_SPI_ICM42688P
 #define USE_ACCGYRO_BMI270
-#define USE_ACCGYRO_LSM6DSL
-#define USE_ACCGYRO_LSM6DSO
+#define USE_ACCGYRO_ASM330LHH
+#define USE_ACCGYRO_BMI323
+#define USE_GYRO_SPI_ICM20689
+#define USE_ACC_SPI_ICM20689
 
 #define USE_ACC
 #define USE_ACC_SPI_ICM42688P
@@ -111,8 +116,8 @@
 #define USE_FLASH_W25M             // Stacked die support
 #define USE_FLASH_W25M512          // 512Kb (256Kb x 2 stacked) NOR flash support
 #define USE_FLASH_W25M02G          // 2Gb (1Gb x 2 stacked) NAND flash support
-#define FLASH_SPI_INSTANCE      SPI2
-#define FLASH_CS_PIN            PB5
+#define FLASH_SPI_INSTANCE      SPI3
+#define FLASH_CS_PIN            SPI3_NSS_PIN
 
 
 
@@ -120,14 +125,13 @@
 #define USE_I2C
 #define USE_I2C_DEVICE_2
 #define I2C_DEVICE              (I2CDEV_2)
-#define I2C2_SCL                PH2 // SCL pad 
-#define I2C2_SDA                PH3 // SDA pad
+#define I2C2_SCL                PB10        // SCL pad
+#define I2C2_SDA                PB11        // SDA pad
 #define USE_I2C_PULLUP
 
 #define USE_BARO
 #define USE_BARO_BMP280
 #define USE_BARO_DPS310
-#define USE_BARO_MS5611
 #define BARO_I2C_INSTANCE       (I2CDEV_2)
 
 #define USE_MAG
@@ -144,31 +148,30 @@
 #define UART1_TX_PIN            PA9
 
 #define USE_UART2
-#define UART2_RX_PIN            PB0 //PA3 CHANGE TO PB0
+#define UART2_RX_PIN            PA3
 #define UART2_TX_PIN            PA2
 
+//uart3 与i2c 复用，如果启用uart3 需要关闭i2c 的所有设备
 #define USE_UART3
-#define UART3_RX_PIN            PB10
-#define UART3_TX_PIN            PB11
+#define UART3_RX_PIN            PB11
+#define UART3_TX_PIN            PB10
+
+#define USE_UART4
+#define UART4_RX_PIN            PC11
+#define UART4_TX_PIN            PC10
 
 #define USE_UART5
-#define UART5_RX_PIN            PB8
-#define UART5_TX_PIN            PB9
+#define UART5_RX_PIN            PD2
+#define UART5_TX_PIN            PC12
 
-#define USE_UART7
-#define UART7_RX_PIN            PB3
-#define UART7_TX_PIN            PB4
+//#define USE_SOFTSERIAL1
+//#define USE_SOFTSERIAL2
 
-
-
-#define USE_SOFTSERIAL1
-#define USE_SOFTSERIAL2
-
-#define SERIAL_PORT_COUNT       8 // VCP  UART1 UART2 UART3 UART5 UART7 SOFTSERIAL 1/2
+#define SERIAL_PORT_COUNT       6 // VCP  UART1 UART2 UART3 UART4 UART5
 
 #define DEFAULT_RX_FEATURE      FEATURE_RX_SERIAL
-#define SERIALRX_PROVIDER       SERIALRX_SBUS
-#define SERIALRX_UART           SERIAL_PORT_USART1
+#define SERIALRX_PROVIDER       SERIALRX_CRSF
+#define SERIALRX_UART           SERIAL_PORT_USART2
 
 
 
@@ -177,19 +180,21 @@
 #define ADC_INSTANCE         ADC1  // Default added
 #define ADC1_DMA_OPT            11  //DMA 2 CH 5
 
-#define VBAT_ADC_PIN            PA0
-#define CURRENT_METER_ADC_PIN   PA1
+#define VBAT_ADC_PIN            PC2
+#define CURRENT_METER_ADC_PIN   PC1
 //#define RSSI_ADC_PIN            0
 
 #define USE_ESCSERIAL
 
-#define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY | FEATURE_SOFTSERIAL |FEATURE_LED_STRIP )
+#define DEFAULT_FEATURES                (FEATURE_OSD | FEATURE_TELEMETRY | FEATURE_SOFTSERIAL | FEATURE_LED_STRIP  | FEATURE_CHANNEL_FORWARDING )
 #define DEFAULT_VOLTAGE_METER_SOURCE    VOLTAGE_METER_ADC
 #define DEFAULT_CURRENT_METER_SOURCE    CURRENT_METER_ADC
 
 #define TARGET_IO_PORTA         0xffff
 #define TARGET_IO_PORTB         0xffff
 #define TARGET_IO_PORTC         0xffff
+#define TARGET_IO_PORTD         0xffff
+#define TARGET_IO_PORTE         BIT(2)
 #define TARGET_IO_PORTH         BIT(1)|BIT(2)|BIT(3)
 
 #define USABLE_TIMER_CHANNEL_COUNT 28
